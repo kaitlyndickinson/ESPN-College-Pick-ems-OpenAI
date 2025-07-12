@@ -5,9 +5,10 @@ import constants
 # https://api.collegefootballdata.com/api/docs/?url=/api-docs.json
 class DataManager:
     """
-    Class to interact with the College Football Data API. 
+    Class to interact with the College Football Data API.
     Fetching games, getting records, and win-loss ratios.
     """
+
     def __init__(self, week):
         self.headers = {
             "Authorization": f"Bearer {constants.API_KEY}",
@@ -38,6 +39,12 @@ class DataManager:
 
         if response.status_code == 200:
             games = response.json()
+
+            if not games:
+                # No game found for this team in the current week
+                formatted_games = f"No game scheduled for {team} in week {self.week}."
+                return formatted_games, None, None
+        
             formatted_games = "\n".join(
                 [
                     f"{game.get('homeTeam')} vs {game.get('awayTeam')}\n"
@@ -49,8 +56,6 @@ class DataManager:
                     f"Home Team Division: {game.get('homeDivision')}\n"
                     f"Away Team Conference: {game.get('awayConference')}\n"
                     f"Away Team Division: {game.get('awayDivision')}\n"
-                    f"Home Team Points: {game.get('homePoints')}\n"
-                    f"Away Team Points: {game.get('awayPoints')}\n"
                     f"Home Team Elo (Pregame): {game.get('homePregameElo')}\n"
                     f"Home Team Elo (Postgame): {game.get('homePostgameElo')}\n"
                     f"Away Team Elo (Pregame): {game.get('awayPregameElo')}\n"
@@ -61,19 +66,19 @@ class DataManager:
                 ]
             )
 
-        return formatted_games, games[0]["homeTeam"], games[0]["awayTeam"]
+            # Return only the first game details, as we assume one game per week for a team
+            return formatted_games, games[0]["homeTeam"], games[0]["awayTeam"]
+        
+        error_msg = f"No data for {team} in week {self.week} — Status code: {response.status_code}"
+        return error_msg, None, None
 
-    def get_previous_week(self, team):
+
+    def get_previous_weeks(self, team):
         """
-        Gets details of the games played by the given team during a specified week.
-        This function is different than get_current_week because less data is returned.
-        E.g. we don't need ALL this data every single week (and it will overload the LLM) .
-        Uses the /games endpoint.
+        Gets summary scores of the games played by the given team in all weeks prior to the current one.
         """
-        # TODO: set year in init
         params = {
             "year": 2024,
-            "week": self.week,
             "seasonType": "regular",
             "division": "fbs",
             "team": team,
@@ -85,31 +90,33 @@ class DataManager:
             params=params,
         )
 
-        if response.status_code == 200:
-            live_games = response.json()
+        if response.status_code != 200:
+            return f"Failed to retrieve games for {team}. Status code: {response.status_code}"
 
-            formatted_week = f"\nWeek {self.week}\n"
-            formatted_week += "\n".join(
-                [
-                    f"{game.get('homeTeam')} vs {game.get('awayTeam')}\n"
-                    f"Venue: {game.get('venue')}\n"
-                    f"Neutral Site: {game.get('neutralSite')}\n"
-                    f"Conference Game: {game.get('conferenceGame')}\n"
-                    f"Score: {game['homeTeam']} {game['homePoints']} - {game['awayPoints']} {game['awayTeam']}\n"
-                    f"Home Elo: {game['homePregameElo']} -> {game['homePostgameElo']}\n"
-                    f"Away Elo: {game['awayPregameElo']} -> {game['awayPostgameElo']}\n"
-                    f"Home Win Probability: {game['homePostgameWinProbability']}\n"
-                    f"Away Win Probability: {game['awayPostgameWinProbability']}\n"
-                    f"Home Conference: {game.get('homeConference')}\n"
-                    f"Home Division: {game.get('homeDivision')}\n"
-                    f"Away Conference: {game.get('awayConference')}\n"
-                    f"Away Division: {game.get('awayDivision')}\n"
-                    for game in live_games
-                ]
-            )
-            return formatted_week
-        else:
-            return f"\nTeam {team} did not play any games week {self.week}\n"
+        all_games = response.json()
+
+        # Filter out games that are after or during the current week
+        past_games = [
+            game for game in all_games
+            if game.get("week") is not None and game["week"] < self.week
+        ]
+
+        if not past_games:
+            return f"No previous games found for {team} before week {self.week}.\n"
+
+        output = []
+        for game in past_games:
+            week = game["week"]
+            home = game["homeTeam"]
+            away = game["awayTeam"]
+            home_pts = game["homePoints"]
+            away_pts = game["awayPoints"]
+
+            line = f"Week {week}: {home} {home_pts} - {away} {away_pts}"
+            output.append(line)
+
+        return "\n".join(output) if output else f"No data for {team} before week {self.week}.\n"
+
 
     def win_loss_ratio(self, teams):
         """

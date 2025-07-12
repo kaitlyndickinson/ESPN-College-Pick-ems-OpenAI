@@ -45,8 +45,8 @@ def main():
                 home_records = data_manager.get_team_records(home_team)
                 away_records = data_manager.get_team_records(away_team)
 
-                home_games = data_manager.get_previous_week(home_team)
-                away_games = data_manager.get_previous_week(away_team)
+                home_games = data_manager.get_previous_weeks(home_team)
+                away_games = data_manager.get_previous_weeks(away_team)
 
                 llm = LLM(current_week, home_records, away_records, home_games, away_games)
 
