@@ -28,32 +28,33 @@ class LLM:
         """
         data = self.format_data()
 
-        completion = self.client.responses.create(
-            instructions=self.instructions,
-            model="o4-mini",
-            input=data
-        )
+        # completion = self.client.responses.create(
+        #     instructions=self.instructions,
+        #     model="o4-mini",
+        #     input=data
+        # )
 
-        return completion.output_text
+        # return completion.output_text
+        return data
     
     def format_data(self):
         """
         Formats the prompt with the game and team data to provide context.
         """
-        DATA = f"""This week's game data:
-        {self.current_week}
+        DATA = f"""This week's game data: 
+{self.current_week}
+        
+Home team data: 
+{self.home_records}
 
-        Home team data:
-        {self.home_records}
+Away team data:
+{self.away_records}
 
-        Away team data:
-        {self.away_records}
+Home team previous weeks performances:
+{self.home_games}
 
-        Home team previous weeks performances:
-        {self.home_games}\n
-
-        Away team previous weeks performances:
-        {self.away_games}\n
-        """
+Away team previous weeks performances:
+{self.away_games}
+"""
         
         return DATA
