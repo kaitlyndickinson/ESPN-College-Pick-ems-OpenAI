@@ -38,31 +38,30 @@ class DataManager:
 
         if response.status_code == 200:
             games = response.json()
-
             formatted_games = "\n".join(
                 [
-                    f"{game['home_team']} vs {game['away_team']}, "
+                    f"{game['homeTeam']} vs {game['awayTeam']}, "
                     f"Week: {game.get('week')}, "
                     f"Venue: {game.get('venue')}, "
-                    f"Neutral Site: {game.get('neutral_site')}, "
-                    f"Conference Game: {game.get('conference_game')}, "
-                    f"Home Team Conference: {game.get('home_conference')}, "
-                    f"Home Team Division: {game.get('home_division')}, "
-                    f"Away Team Conference: {game.get('away_conference')}, "
-                    f"Away Team Division: {game.get('away_division')}, "
-                    f"Home Team Points: {game.get('home_points')}, "
-                    f"Away Team Points: {game.get('away_points')}, "
-                    f"Home Team Elo (Pregame): {game.get('home_pregame_elo')}, "
-                    f"Home Team Elo (Postgame): {game.get('home_postgame_elo')}, "
-                    f"Away Team Elo (Pregame): {game.get('away_pregame_elo')}, "
-                    f"Away Team Elo (Postgame): {game.get('away_postgame_elo')}, "
-                    f"Home Team Win Probability: {game.get('home_post_win_prob')}, "
-                    f"Away Team Win Probability: {game.get('away_post_win_prob')}"
+                    f"Neutral Site: {game.get('neutralSite')}, "
+                    f"Conference Game: {game.get('conferenceGame')}, "
+                    f"Home Team Conference: {game.get('homeConference')}, "
+                    f"Home Team Division: {game.get('homeDivision')}, "
+                    f"Away Team Conference: {game.get('awayConference')}, "
+                    f"Away Team Division: {game.get('awayDivision')}, "
+                    f"Home Team Points: {game.get('homePoints')}, "
+                    f"Away Team Points: {game.get('awayPoints')}, "
+                    f"Home Team Elo (Pregame): {game.get('homePregameElo')}, "
+                    f"Home Team Elo (Postgame): {game.get('homePostgameElo')}, "
+                    f"Away Team Elo (Pregame): {game.get('awayPregameElo')}, "
+                    f"Away Team Elo (Postgame): {game.get('awayPostgameElo')}, "
+                    f"Home Team Win Probability: {game.get('homePostgameWinProbability')}, "
+                    f"Away Team Win Probability: {game.get('awayPostgameWinProbability')}"
                     for game in games
                 ]
             )
 
-        return formatted_games, games[0]["home_team"], games[0]["away_team"]
+        return formatted_games, games[0]["homeTeam"], games[0]["awayTeam"]
 
     def get_previous_week(self, team):
         """
@@ -92,19 +91,19 @@ class DataManager:
             formatted_week = f"\nWeek {self.week}\n"
             formatted_week += "\n".join(
                 [
-                    f"{game['home_team']} vs {game['away_team']}, "
+                    f"{game['homeTeam']} vs {game['awayTeam']}, "
                     f"Venue: {game.get('venue')}, "
-                    f"Neutral Site: {game.get('neutral_site')}, "
-                    f"Conference Game: {game.get('conference_game')}, "
-                    f"Score: {game['home_team']} {game['home_points']} - {game['away_points']} {game['away_team']}, "
-                    f"Home Elo: {game['home_pregame_elo']} -> {game['home_postgame_elo']}, "
-                    f"Away Elo: {game['away_pregame_elo']} -> {game['away_postgame_elo']}, "
-                    f"Home Win Probability: {game['home_post_win_prob']}, "
-                    f"Away Win Probability: {game['away_post_win_prob']}, "
-                    f"Home Conference: {game.get('home_conference')}, "
-                    f"Home Division: {game.get('home_division')}, "
-                    f"Away Conference: {game.get('away_conference')}, "
-                    f"Away Division: {game.get('away_division')}"
+                    f"Neutral Site: {game.get('neutralSite')}, "
+                    f"Conference Game: {game.get('conferenceGame')}, "
+                    f"Score: {game['homeTeam']} {game['homePoints']} - {game['awayPoints']} {game['awayTeam']}, "
+                    f"Home Elo: {game['homePregameElo']} -> {game['homePostgameElo']}, "
+                    f"Away Elo: {game['awayPregameElo']} -> {game['awayPostgameElo']}, "
+                    f"Home Win Probability: {game['homePostgameWinProbability']}, "
+                    f"Away Win Probability: {game['awayPostgameWinProbability']}, "
+                    f"Home Conference: {game.get('homeConference')}, "
+                    f"Home Division: {game.get('homeDivision')}, "
+                    f"Away Conference: {game.get('awayConference')}, "
+                    f"Away Division: {game.get('awayDivision')}"
                     for game in live_games
                 ]
             )

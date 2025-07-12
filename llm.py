@@ -13,32 +13,34 @@ class LLM:
         self.away_games = away_games
         self.client = OpenAI(api_key=constants.OPENAI_API_KEY)
 
+        # Instructions for the LLM to generate predictions
+        self.instructions = """You are a sports analyst. Given the college football game this week and the data provided, give a prediction on which team will end this week and what the final score will be. Give a short explaination as to why. Format the response as follows:
+
+        Prediction: [Team Name] will win this week against [Team Name] with a score of [Team A Score - Team B Score].
+        
+        Explanation: [Short explanation of the prediction based on the data provided].
+        """
+
     def get_results(self):
         """
-        Generates predictions and explanations for this week's games using gpt-4o-mini. 
+        Generates predictions and explanations for this week's games using o4-mini. 
         Also formats the prompt.
         """
-        prompt = self.format_prompt()
+        data = self.format_data()
 
-        completion = self.client.chat.completions.create(
-            messages=[
-                {
-                    "role": "system",
-                    "content": prompt,
-                },
-            ],
-            model="gpt-4o-mini",
+        completion = self.client.responses.create(
+            instructions=self.instructions,
+            model="o4-mini",
+            input=data
         )
 
-        return completion.choices[0].message.content
+        return completion.output_text
     
-    def format_prompt(self):
+    def format_data(self):
         """
         Formats the prompt with the game and team data to provide context.
         """
-        PROMPT = f"""Given the college football game this week and the data provided, give a prediction on which team will end this week and what the final score will be. Give a short explaination as to why. 
-
-        This week's game data:
+        DATA = f"""This week's game data:
         {self.current_week}
 
         Home team data:
@@ -53,5 +55,5 @@ class LLM:
         Away team previous weeks performances:
         {self.away_games}\n
         """
-
-        return PROMPT
+        
+        return DATA
