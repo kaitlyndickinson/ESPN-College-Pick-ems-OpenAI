@@ -3,7 +3,7 @@ from data_manager import DataManager
 from llm import LLM
 from db_manager import init_db, save_predictions, get_all_datasets
 
-st.set_page_config(page_title="ESPN College Pick-ems AI Predictor", layout="wide")
+st.set_page_config(page_title="LLM Predictor", page_icon="🤖")
 
 init_db()
 
