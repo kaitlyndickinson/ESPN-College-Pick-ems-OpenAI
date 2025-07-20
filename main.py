@@ -1,45 +1,40 @@
-import argparse
+import streamlit as st
 from data_manager import DataManager
 from llm import LLM
-import sys
+from db_manager import init_db, save_predictions, get_all_datasets
 
-sys.stdout.reconfigure(encoding="utf-8")
+st.set_page_config(page_title="ESPN College Pick-ems AI Predictor", layout="wide")
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Get football predictions from team data."
-    )
-    parser.add_argument(
-        "-f",
-        "--file",
-        required=True,
-        help="Path to the input CSV file with team names.",
-    )
-    parser.add_argument(
-        "-w",
-        "--week",
-        type=int,
-        required=True,
-        help="The current week number to fetch data for.",
-    )
+init_db()
 
-    args = parser.parse_args()
+st.title("🏈 College Football Predictor")
+st.markdown("Predict the outcome of ESPN College Pick-ems using OpenAI.")
 
-    if args.week and args.file:
-        data_manager = DataManager(args.week)
+st.sidebar.title("Input Parameters")
 
-        with open(args.file, "r") as file:
-            data = file.read()
+# ----- Sidebar -----
+# Assuming 14 weeks in a season
+week = st.sidebar.number_input("Week", min_value=1, max_value=14, value=1)
 
-        # Expect a list of teams comma separated values, where the team name matches that of the API
-        teams = data.split(",")
+home_teams = st.sidebar.text_area(label="Home Teams (comma-separated)", placeholder="e.g., Team A, Team B, Team C")
 
-        teams = [team.strip() for team in teams]
+dataset_name = st.sidebar.text_input("Dataset Name")
 
-        predictions = []
+submit_button = st.sidebar.button("Submit")
 
-        with open("results.txt", "w", encoding="utf-8") as outfile:
-            # Process one team at a time (during testing, I found making multiple API calls to OpenAI is much more efficient than shoving all the data down its throat)
+# ----- Main View -----
+if submit_button:
+    # TODO: Allow dataset name to be optional, and just not save to DB
+    if not home_teams or not dataset_name:
+        st.error("Please fill in all fields.")
+    else:
+        data_manager = DataManager(week)
+
+        teams = [team.strip() for team in home_teams.split(",")]
+
+        predictions = {}
+
+        with st.spinner("Generating predictions..."):
             for team in teams:
                 current_week, home_team, away_team = data_manager.get_current_week(team)
                 home_records = data_manager.get_team_records(home_team)
@@ -51,9 +46,16 @@ def main():
                 llm = LLM(current_week, home_records, away_records, home_games, away_games)
 
                 prediction = llm.get_results()
-                predictions.append(prediction)
-                outfile.write(f"=========================================================\n{prediction}\n")
+                key = f"{home_team} vs {away_team}"
+                predictions[key] = prediction
+
+        save_predictions(dataset_name, predictions)
+        st.success(f"Predictions saved to dataset: **{dataset_name}**")
+        
+        st.markdown("### Predictions")
+        for matchup, pred in predictions.items():
+            st.markdown(f"#### {matchup}")
+            with st.container():
+                st.markdown(f"<div style='white-space: pre-wrap'>{pred}</div>", unsafe_allow_html=True)
 
 
-if __name__ == "__main__":
-    main()

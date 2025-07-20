@@ -16,9 +16,9 @@ class LLM:
         # Instructions for the LLM to generate predictions
         self.instructions = """You are a sports analyst. Given the college football game this week and the data provided, give a prediction on which team will end this week and what the final score will be. Give a short explaination as to why. Format the response as follows:
 
-        Prediction: [Team Name] will win this week against [Team Name] with a score of [Team A Score - Team B Score].
+        **Prediction:** [Team Name] will win this week against [Team Name] with a score of [Team A Score - Team B Score].
         
-        Explanation: [Short explanation of the prediction based on the data provided].
+        **Explanation:** [Short explanation of the prediction based on the data provided].
         """
 
     def get_results(self):
@@ -28,14 +28,13 @@ class LLM:
         """
         data = self.format_data()
 
-        # completion = self.client.responses.create(
-        #     instructions=self.instructions,
-        #     model="o4-mini",
-        #     input=data
-        # )
+        completion = self.client.responses.create(
+            instructions=self.instructions,
+            model="o4-mini",
+            input=data
+        )
 
-        # return completion.output_text
-        return data
+        return completion.output_text
     
     def format_data(self):
         """
