@@ -14,7 +14,7 @@ class LLM:
         self.client = OpenAI(api_key=constants.OPENAI_API_KEY)
 
         # Instructions for the LLM to generate predictions
-        self.instructions = """You are a sports analyst. Given the college football game this week and the data provided, give a prediction on which team will end this week and what the final score will be. Give a short explaination as to why. Format the response as follows:
+        self.instructions = """You are a sports analyst. Given the college football game this week and the data provided, give a prediction on which team will win this week and what the final score will be. Give a short explaination as to why. Format the response as follows:
 
         **Prediction:** [Team Name] will win this week against [Team Name] with a score of [Team A Score - Team B Score].
         

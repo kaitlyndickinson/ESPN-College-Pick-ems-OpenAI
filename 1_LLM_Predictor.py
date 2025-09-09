@@ -36,6 +36,7 @@ if submit_button:
 
         with st.spinner("Generating predictions..."):
             for team in teams:
+                # TODO: this is gross. Use a pattern.
                 current_week, home_team, away_team = data_manager.get_current_week(team)
                 home_records = data_manager.get_team_records(home_team)
                 away_records = data_manager.get_team_records(away_team)

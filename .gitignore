@@ -5,3 +5,4 @@ historic_data/
 teams.csv
 results.txt
 predictions.db
+*.json

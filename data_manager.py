@@ -24,7 +24,7 @@ class DataManager:
         """
         # TODO: set year in init
         params = {
-            "year": 2024,
+            "year": 2025,
             "week": self.week,
             "seasonType": "regular",
             "division": "fbs",
@@ -78,7 +78,7 @@ class DataManager:
         Gets summary scores of the games played by the given team in all weeks prior to the current one.
         """
         params = {
-            "year": 2024,
+            "year": 2025,
             "seasonType": "regular",
             "division": "fbs",
             "team": team,
@@ -126,7 +126,7 @@ class DataManager:
 
         for team in teams:
             params = {
-                "year": 2024,
+                "year": 2025,
                 "team": team,
             }
 
@@ -163,7 +163,7 @@ class DataManager:
         Gets records for a specific team, using the /records endpoint.
         """
         params = {
-            "year": 2024,
+            "year": 2025,
             "seasonType": "regular",
             "team": team,
         }
@@ -176,10 +176,14 @@ class DataManager:
 
         if response.status_code == 200:
             records = response.json()
-            return (
-                f"Team: {records[0]['team']}\n"
-                f"Conference: {records[0]['conference']}\n"
-                f"Wins: {records[0]['total']['wins']}, Losses: {records[0]['total']['losses']}, Ties: {records[0]['total']['ties']}"
-            )
+            
+            if records:
+                return (
+                    f"Team: {records[0]['team']}\n"
+                    f"Conference: {records[0]['conference']}\n"
+                    f"Wins: {records[0]['total']['wins']}, Losses: {records[0]['total']['losses']}, Ties: {records[0]['total']['ties']}"
+                )
+            else:
+                return f"This is likely a team that hasn't played yet this season: {team}."
         else:
-            return f"No data available for team {team}."
+            return f"No data available for team {team}." 
