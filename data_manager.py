@@ -17,6 +17,31 @@ class DataManager:
         self.games = 0
         self.week = week
 
+    def get_sp_stats(self, team, year=2025):
+        sp_url = "https://api.collegefootballdata.com/ratings/sp"
+        params = {"year": year, "team": team}
+
+        resp = requests.get(sp_url, headers=self.headers, params=params)
+
+        if resp.status_code != 200:
+            formatted_games = f"No SP+ stats for {team}"
+
+        sp = resp.json()
+
+        formatted_games = "\n".join(
+            [
+                "SP+ Metrics:\n"
+                f"Overall Ranking: {sp[0]['ranking']}\n"
+                f"Overall Rating: {sp[0]['rating']}\n"
+                f"Offense Ranking: {sp[0]['offense']['ranking']}\n"
+                f"Offense Rating: {sp[0]['offense']['rating']}\n"
+                f"Defense Ranking: {sp[0]['defense']['ranking']}\n"
+                f"Defnse Rating: {sp[0]['defense']['rating']}\n"
+            ]
+        )
+
+        return formatted_games
+    
     def get_current_week(self, team):
         """
         Gets details of the games played by the given team during a specified week.
@@ -52,16 +77,6 @@ class DataManager:
                     f"Venue: {game.get('venue')}\n"
                     f"Neutral Site: {game.get('neutralSite')}\n"
                     f"Conference Game: {game.get('conferenceGame')}\n"
-                    f"Home Team Conference: {game.get('homeConference')}\n"
-                    f"Home Team Division: {game.get('homeDivision')}\n"
-                    f"Away Team Conference: {game.get('awayConference')}\n"
-                    f"Away Team Division: {game.get('awayDivision')}\n"
-                    f"Home Team Elo (Pregame): {game.get('homePregameElo')}\n"
-                    f"Home Team Elo (Postgame): {game.get('homePostgameElo')}\n"
-                    f"Away Team Elo (Pregame): {game.get('awayPregameElo')}\n"
-                    f"Away Team Elo (Postgame): {game.get('awayPostgameElo')}\n"
-                    f"Home Team Win Probability: {game.get('homePostgameWinProbability')}\n"
-                    f"Away Team Win Probability: {game.get('awayPostgameWinProbability')}"
                     for game in games
                 ]
             )

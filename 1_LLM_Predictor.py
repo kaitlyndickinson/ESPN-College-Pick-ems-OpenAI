@@ -24,7 +24,6 @@ submit_button = st.sidebar.button("Submit")
 
 # ----- Main View -----
 if submit_button:
-    # TODO: Allow dataset name to be optional, and just not save to DB
     if not home_teams or not dataset_name:
         st.error("Please fill in all fields.")
     else:
@@ -36,7 +35,6 @@ if submit_button:
 
         with st.spinner("Generating predictions..."):
             for team in teams:
-                # TODO: this is gross. Use a pattern.
                 current_week, home_team, away_team = data_manager.get_current_week(team)
                 home_records = data_manager.get_team_records(home_team)
                 away_records = data_manager.get_team_records(away_team)
@@ -44,7 +42,11 @@ if submit_button:
                 home_games = data_manager.get_previous_weeks(home_team)
                 away_games = data_manager.get_previous_weeks(away_team)
 
-                llm = LLM(current_week, home_records, away_records, home_games, away_games)
+                sp_stats_home = data_manager.get_sp_stats(home_team)
+                sp_stats_away = data_manager.get_sp_stats(away_team)
+
+            
+                llm = LLM(current_week, home_records, away_records, home_games, away_games, sp_stats_home, sp_stats_away)
 
                 prediction = llm.get_results()
                 key = f"{home_team} vs {away_team}"

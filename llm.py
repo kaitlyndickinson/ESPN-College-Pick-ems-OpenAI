@@ -5,12 +5,14 @@ class LLM:
     """
     LLM class to generate predictions for college football games.
     """
-    def __init__(self, current_week, home_records, away_records, home_games, away_games):
+    def __init__(self, current_week, home_records, away_records, home_games, away_games, sp_stats_home, sp_stats_away):
         self.current_week = current_week
         self.home_records = home_records
         self.away_records = away_records
         self.home_games = home_games
         self.away_games = away_games
+        self.sp_stats_home = sp_stats_home
+        self.sp_stats_away = sp_stats_away
         self.client = OpenAI(api_key=constants.OPENAI_API_KEY)
 
         # Instructions for the LLM to generate predictions
@@ -27,7 +29,7 @@ class LLM:
         Also formats the prompt.
         """
         data = self.format_data()
-
+        print(data)
         completion = self.client.responses.create(
             instructions=self.instructions,
             model="o4-mini",
@@ -41,19 +43,19 @@ class LLM:
         Formats the prompt with the game and team data to provide context.
         """
         DATA = f"""This week's game data: 
-{self.current_week}
-        
+{self.current_week}\n      
 Home team data: 
-{self.home_records}
-
+{self.home_records}\n
 Away team data:
-{self.away_records}
-
+{self.away_records}\n
 Home team previous weeks performances:
-{self.home_games}
-
+{self.home_games}\n
 Away team previous weeks performances:
-{self.away_games}
+{self.away_games}\n
+Home team SP+ stats:
+{self.sp_stats_home}\n
+Away team SP+ stats:
+{self.sp_stats_away}
 """
         
         return DATA
