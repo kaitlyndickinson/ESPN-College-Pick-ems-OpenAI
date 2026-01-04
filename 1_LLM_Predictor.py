@@ -14,7 +14,7 @@ st.sidebar.title("Input Parameters")
 
 # ----- Sidebar -----
 # Assuming 14 weeks in a season
-week = st.sidebar.number_input("Week", min_value=1, max_value=14, value=1)
+week = st.sidebar.number_input("Week", min_value=1, max_value=15, value=1)
 
 home_teams = st.sidebar.text_area(label="Home Teams (comma-separated)", placeholder="e.g., Team A, Team B, Team C")
 
