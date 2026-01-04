@@ -2,3 +2,7 @@ constants.py
 .venv
 __pycache__
 historic_data/
+teams.csv
+results.txt
+predictions.db
+*.json
